@@ -872,14 +872,50 @@ setInterval(() => { if(Math.random() > 0.65){ count++; updateCount(); } }, 9500)
 function handleSubmit(e){
   e.preventDefault();
   const emailInput = e.target.querySelector('input[type="email"]');
-  const email = emailInput ? emailInput.value : '';
-  const url = 'https://gmail.us11.list-manage.com/subscribe?u=2ade8fd579c2bb1fb78e59258&id=387d6d7eb8';
-  window.open(url, '_blank');
+  const email = emailInput ? emailInput.value.trim() : '';
+  if(!email) return;
+
+  // Submit to Mailchimp via hidden iframe to avoid redirect
+  const mcUrl = 'https://gmail.us11.list-manage.com/subscribe/post?u=2ade8fd579c2bb1fb78e59258&id=387d6d7eb8';
+  
+  // Create a hidden form and submit it to an invisible iframe
+  let iframe = document.getElementById('mc_iframe');
+  if(!iframe){
+    iframe = document.createElement('iframe');
+    iframe.id = 'mc_iframe';
+    iframe.name = 'mc_iframe';
+    iframe.style.display = 'none';
+    document.body.appendChild(iframe);
+  }
+
+  const tempForm = document.createElement('form');
+  tempForm.action = mcUrl;
+  tempForm.method = 'POST';
+  tempForm.target = 'mc_iframe';
+  tempForm.style.display = 'none';
+
+  const emailField = document.createElement('input');
+  emailField.type = 'hidden';
+  emailField.name = 'EMAIL';
+  emailField.value = email;
+  tempForm.appendChild(emailField);
+
+  const botField = document.createElement('input');
+  botField.type = 'hidden';
+  botField.name = 'b_2ade8fd579c2bb1fb78e59258_387d6d7eb8';
+  botField.value = '';
+  tempForm.appendChild(botField);
+
+  document.body.appendChild(tempForm);
+  tempForm.submit();
+  document.body.removeChild(tempForm);
+
+  // Show success state immediately
   const form = document.getElementById('wForm');
   const success = document.getElementById('wSuccess');
   if(form && e.target === form){ form.classList.add('hide'); success.classList.add('show'); }
   if(e.target !== form){
-    e.target.innerHTML = '<p style="color:var(--teal);font-size:14px;padding:12px;font-weight:500">✦ Opening signup — your $3 first month is reserved.</p>';
+    e.target.innerHTML = `<p style="color:var(--teal);font-size:14px;padding:12px;font-weight:500">&#10022; You're on the list &#8212; your $3 first month is reserved.</p>`;
   }
   count++; updateCount();
 }
