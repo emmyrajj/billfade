@@ -871,13 +871,17 @@ setInterval(() => { if(Math.random() > 0.65){ count++; updateCount(); } }, 9500)
 
 function handleSubmit(e){
   e.preventDefault();
+  const emailInput = e.target.querySelector('input[type="email"]');
+  const email = emailInput ? emailInput.value : '';
+  const url = 'https://eepurl.com/jCsOSw';
+  window.open(url, '_blank');
   const form = document.getElementById('wForm');
   const success = document.getElementById('wSuccess');
-  if(form){ form.classList.add('hide'); success.classList.add('show'); }
-  count++; updateCount();
+  if(form && e.target === form){ form.classList.add('hide'); success.classList.add('show'); }
   if(e.target !== form){
-    e.target.innerHTML = '<p style="color:var(--teal);font-size:14px;padding:12px;font-weight:500">✦ You\'re on the list. See you at launch.</p>';
+    e.target.innerHTML = '<p style="color:var(--teal);font-size:14px;padding:12px;font-weight:500">✦ Opening signup — your $3 first month is reserved.</p>';
   }
+  count++; updateCount();
 }
 
 const obs = new IntersectionObserver(entries => {
